@@ -1,0 +1,9 @@
+# Python
+__pycache__/
+*.pyc
+
+# System
+.DS_Store
+
+# Project Output
+# output/ # Uncomment if you want to ignore generated PDFs
