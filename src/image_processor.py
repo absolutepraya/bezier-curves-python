@@ -15,17 +15,16 @@ def get_contours(image_path, min_area=100):
     # 2. Convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # 3. Thresholding (Inverted binary thresholding often works best for dark drawings on white background)
-    # Adjust threshold value as needed. 127 is a standard starting point.
-    # We use THRESH_BINARY_INV assuming the logo is dark on light background.
-    # If the logo is light on dark, use THRESH_BINARY.
-    _, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
+    # 3. Edge Detection (Canny)
+    # Canny is more robust for finding edges regardless of brightness direction.
+    # We use standard thresholds 100 and 200.
+    edges = cv2.Canny(img, 100, 200)
 
     # 4. Find contours
     # RETR_EXTERNAL retrieves only the extreme outer contours. 
     # RETR_LIST retrieves all contours.
     # CHAIN_APPROX_NONE stores all the contour points (no approximation).
-    contours, _ = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     processed_contours = []
     for cnt in contours:
