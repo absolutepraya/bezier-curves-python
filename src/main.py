@@ -1,7 +1,7 @@
 import os
 from image_processor import get_contours
 from curve_fitter import fit_curve_recursive
-from pdf_generator import generate_pdf_from_curves
+from png_generator import generate_png_from_curves
 
 def main():
     input_dir = "input"
@@ -65,9 +65,11 @@ def main():
             
         print(f"Total Bézier curves generated: {total_curves_count}")
         
-        # Generate PDF
-        print(f"Generating PDF: {output_path}")
-        generate_pdf_from_curves(all_curves, output_path, width, height)
+        # Generate PNG
+        png_output_filename = f"{name_without_ext}-output.png"
+        png_output_path = os.path.join(output_dir, png_output_filename)
+        print(f"Generating PNG: {png_output_path}")
+        generate_png_from_curves(all_curves, png_output_path, width, height)
         
         print("Done!")
         

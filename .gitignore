@@ -8,3 +8,6 @@ __pycache__/
 # Project Input & Output
 input/
 output/
+
+# Report
+report/
