@@ -7,7 +7,7 @@ Proyek ini mengimplementasikan algoritma *Least Squares Fitting* untuk mereprese
 Pastikan Anda telah menginstal Python 3 dan pustaka yang diperlukan:
 
 ```bash
-pip install numpy opencv-python
+pip install -r requirements.txt
 ```
 
 ## Struktur Direktori
@@ -19,7 +19,7 @@ pip install numpy opencv-python
   - `bezier_math.py`: Implementasi matematika Bézier dan kelas Point.
   - `curve_fitter.py`: Logika *fitting* kurva menggunakan *Least Squares*.
   - `image_processor.py`: Pengolahan citra untuk ekstraksi kontur.
-  - `pdf_generator.py`: Generator file PDF manual.
+  - `png_generator.py`: Generator file PNG dari kurva Bézier.
 - `README.md`: Petunjuk penggunaan.
 
 ## Cara Menjalankan
@@ -34,7 +34,7 @@ pip install numpy opencv-python
 
 4.  Program akan menampilkan daftar file gambar yang ada di folder `input/`.
 5.  Pilih nomor gambar yang ingin diproses.
-6.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama `<nama_file>-output.pdf`.
+6.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama `<nama_file>-output.png`.
 
 ## Catatan
 
