@@ -43,27 +43,36 @@ def main():
     
     # 3. Construct output filename
     name_without_ext = os.path.splitext(filename)[0]
-    output_filename = f"{name_without_ext}-output.pdf"
-    output_path = os.path.join(output_dir, output_filename)
     
     print(f"\nProcessing {input_path}...")
     
     try:
         # Get contours
         contours, (height, width, _) = get_contours(input_path)
-        print(f"Found {len(contours)} contours.")
         
         all_curves = []
         total_curves_count = 0
+        total_points_count = 0
         
         # Fit curves
         for i, contour in enumerate(contours):
-            # print(f"Fitting contour {i+1}/{len(contours)} with {len(contour)} points...")
+            total_points_count += len(contour)
             curves = fit_curve_recursive(contour, error_threshold=2.0)
             all_curves.append(curves)
             total_curves_count += len(curves)
             
-        print(f"Total Bézier curves generated: {total_curves_count}")
+        # Data Logging
+        print("-" * 40)
+        print(f"DATA LOGGING SUMMARY")
+        print("-" * 40)
+        print(f"Image Dimensions        : {width}x{height}")
+        print(f"Total Contours Found    : {len(contours)}")
+        print(f"Total Original Points   : {total_points_count}")
+        print(f"Total Bezier Curves     : {total_curves_count}")
+        if total_curves_count > 0:
+            ratio = total_points_count / total_curves_count
+            print(f"Compression Ratio       : 1 curve per {ratio:.2f} points")
+        print("-" * 40)
         
         # Generate PNG
         png_output_filename = f"{name_without_ext}-output.png"
