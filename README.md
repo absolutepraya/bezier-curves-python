@@ -34,7 +34,8 @@ pip install -r requirements.txt
 
 4.  Program akan menampilkan daftar file gambar yang ada di folder `input/`.
 5.  Pilih nomor gambar yang ingin diproses.
-6.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama `<nama_file>-output.pdf`.
+6.  Program akan meminta jumlah kurva yang diinginkan. Tekan `Enter` untuk menggunakan nilai *default* (21 kurva) atau masukkan angka tertentu (misal: 100).
+7.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama `<nama_file>-output.pdf`.
 
 ## Catatan
 
