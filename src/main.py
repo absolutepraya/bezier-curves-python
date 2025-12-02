@@ -1,7 +1,7 @@
 import os
 from image_processor import get_contours
 from curve_fitter import fit_curve_recursive
-from png_generator import generate_png_from_curves
+from pdf_generator import generate_pdf_from_curves
 
 def main():
     input_dir = "input"
@@ -74,11 +74,16 @@ def main():
             print(f"Compression Ratio       : 1 curve per {ratio:.2f} points")
         print("-" * 40)
         
-        # Generate PNG
-        png_output_filename = f"{name_without_ext}-output.png"
-        png_output_path = os.path.join(output_dir, png_output_filename)
-        print(f"Generating PNG: {png_output_path}")
-        generate_png_from_curves(all_curves, png_output_path, width, height)
+        # Generate PDF
+        pdf_output_filename = f"{name_without_ext}-output.pdf"
+        pdf_output_path = os.path.join(output_dir, pdf_output_filename)
+        print(f"Generating PDF: {pdf_output_path}")
+        stream_snippet = generate_pdf_from_curves(all_curves, pdf_output_path, width, height)
+        
+        print(f"Content Stream Snippet (first 5 lines):")
+        for line in stream_snippet:
+            print(f"  {line}")
+        print("-" * 40)
         
         print("Done!")
         

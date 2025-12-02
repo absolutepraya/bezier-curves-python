@@ -102,3 +102,6 @@ def generate_pdf_from_curves(curves, output_filename, width, height):
         pdf.add_stroke()
         
     pdf.generate()
+    
+    # Return a snippet of the content stream for logging
+    return pdf.content_stream[:5]

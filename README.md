@@ -19,7 +19,7 @@ pip install -r requirements.txt
   - `bezier_math.py`: Implementasi matematika Bézier dan kelas Point.
   - `curve_fitter.py`: Logika *fitting* kurva menggunakan *Least Squares*.
   - `image_processor.py`: Pengolahan citra untuk ekstraksi kontur.
-  - `png_generator.py`: Generator file PNG dari kurva Bézier.
+  - `pdf_generator.py`: Generator file PDF manual.
 - `README.md`: Petunjuk penggunaan.
 
 ## Cara Menjalankan
@@ -34,7 +34,7 @@ pip install -r requirements.txt
 
 4.  Program akan menampilkan daftar file gambar yang ada di folder `input/`.
 5.  Pilih nomor gambar yang ingin diproses.
-6.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama `<nama_file>-output.png`.
+6.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama `<nama_file>-output.pdf`.
 
 ## Catatan
 
