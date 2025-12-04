@@ -44,22 +44,44 @@ def main():
     # 3. Construct output filename
     name_without_ext = os.path.splitext(filename)[0]
     
-    print(f"\nProcessing {input_path}...")
+    # 4. Ask for number of curves
+    target_curves = 21 # Default
+    try:
+        user_input = input(f"\nHow many curves are we gonna use? (Press Enter for default {target_curves}, or 0 for auto-accuracy): ")
+        if user_input.strip():
+            target_curves = int(user_input)
+    except ValueError:
+        print(f"Invalid input. Using default: {target_curves}")
+    
+    if target_curves == 0:
+        print(f"\nProcessing {input_path} with automatic accuracy (threshold=2.0)...")
+    else:
+        print(f"\nProcessing {input_path} with target {target_curves} curves...")
     
     try:
         # Get contours
         contours, (height, width, _) = get_contours(input_path)
         
         all_curves = []
+        
+        if target_curves == 0:
+            # Use recursive fitting with error threshold
+            from curve_fitter import fit_curve_recursive
+            for contour in contours:
+                curves = fit_curve_recursive(contour, error_threshold=2.0)
+                all_curves.append(curves)
+        else:
+            # Fit curves using fixed count strategy
+            from curve_fitter import fit_curves_to_fixed_count
+            all_curves = fit_curves_to_fixed_count(contours, target_curves)
+        
+        # Calculate stats
         total_curves_count = 0
         total_points_count = 0
-        
-        # Fit curves
         for i, contour in enumerate(contours):
             total_points_count += len(contour)
-            curves = fit_curve_recursive(contour, error_threshold=2.0)
-            all_curves.append(curves)
-            total_curves_count += len(curves)
+            if i < len(all_curves):
+                total_curves_count += len(all_curves[i])
             
         # Data Logging
         print("-" * 40)
