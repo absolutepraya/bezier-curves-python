@@ -6,8 +6,8 @@ __pycache__/
 .DS_Store
 
 # Project Input & Output
-input/
-output/
+/input
+/output
 
 # Report
 .report/

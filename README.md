@@ -34,11 +34,16 @@ pip install -r requirements.txt
 
 4.  Program akan menampilkan daftar file gambar yang ada di folder `input/`.
 5.  Pilih nomor gambar yang ingin diproses.
-6.  Program akan meminta jumlah kurva yang diinginkan.
+6.  Program akan meminta metode yang digunakan:
+    *   **Hybrid (Least Squares)**: Metode *default*. Menghasilkan kurva yang efisien dan mulus.
+    *   **Pure Interpolation**: Menghubungkan setiap titik *pixel* dengan kurva. Menghasilkan file yang sangat besar.
+7.  Jika memilih **Hybrid**, program akan meminta jumlah kurva yang diinginkan.
     *   Tekan `Enter` untuk menggunakan nilai *default* (21 kurva).
     *   Masukkan angka `0` untuk mode otomatis (menyesuaikan akurasi).
     *   Masukkan angka tertentu (misal: 100) untuk menetapkan jumlah kurva.
-7.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama `<nama_file>-output.pdf`.
+8.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama:
+    *   `<nama_file>-output-hybrid.pdf` (jika menggunakan Hybrid)
+    *   `<nama_file>-output-pure.pdf` (jika menggunakan Pure Interpolation)
 
 ## Catatan
 
