@@ -59,11 +59,11 @@ def main():
         # Hybrid Method: Ask for number of curves
         default_curves = 21
         try:
-            user_input = input(f"\nHow many curves are we gonna use? (Press Enter for default {default_curves}, or 0 for auto-accuracy): ")
+            user_input = input(f'\nHow many curves are we gonna use? (Press Enter for auto, or for example "21" for 21 curves): ')
             if user_input.strip():
                 target_curves = int(user_input)
             else:
-                target_curves = default_curves
+                target_curves = 0
         except ValueError:
             print(f"Invalid input. Using default: {default_curves}")
             target_curves = default_curves
@@ -123,7 +123,8 @@ def main():
         print("-" * 40)
         
         # Generate PDF
-        pdf_output_filename = f"{name_without_ext}-output.pdf"
+        method_suffix = "-hybrid" if method == 1 else "-pure"
+        pdf_output_filename = f"{name_without_ext}-output{method_suffix}.pdf"
         pdf_output_path = os.path.join(output_dir, pdf_output_filename)
         print(f"Generating PDF: {pdf_output_path}")
         stream_snippet = generate_pdf_from_curves(all_curves, pdf_output_path, width, height)

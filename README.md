@@ -41,7 +41,9 @@ pip install -r requirements.txt
     *   Tekan `Enter` untuk menggunakan nilai *default* (21 kurva).
     *   Masukkan angka `0` untuk mode otomatis (menyesuaikan akurasi).
     *   Masukkan angka tertentu (misal: 100) untuk menetapkan jumlah kurva.
-8.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama `<nama_file>-output.pdf`.
+8.  Program akan memproses gambar tersebut dan menyimpan hasilnya di folder `output/` dengan nama:
+    *   `<nama_file>-output-hybrid.pdf` (jika menggunakan Hybrid)
+    *   `<nama_file>-output-pure.pdf` (jika menggunakan Pure Interpolation)
 
 ## Catatan
 
