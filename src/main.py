@@ -1,7 +1,10 @@
 import os
-from image_processor import get_contours
-from curve_fitter import fit_curve_recursive
+import argparse
+import cv2
+import csv
 from pdf_generator import generate_pdf_from_curves
+from bezier_math import Point
+from fitting import fit_curve_recursive, fit_curves_to_fixed_count, fit_curve_pure_interpolation
 
 def main():
     input_dir = "input"
@@ -80,25 +83,23 @@ def main():
 
     try:
         # Get contours
+        from image_processor import get_contours
         contours, (height, width, _) = get_contours(input_path)
         
         all_curves = []
         
         if method == 2:
             # Pure Interpolation
-            from curve_fitter import fit_curve_pure_interpolation
             for contour in contours:
                 curves = fit_curve_pure_interpolation(contour)
                 all_curves.append(curves)
         elif target_curves == 0:
             # Hybrid Auto
-            from curve_fitter import fit_curve_recursive
             for contour in contours:
                 curves = fit_curve_recursive(contour, error_threshold=2.0)
                 all_curves.append(curves)
         else:
             # Hybrid Fixed Count
-            from curve_fitter import fit_curves_to_fixed_count
             all_curves = fit_curves_to_fixed_count(contours, target_curves)
         
         # Calculate stats
