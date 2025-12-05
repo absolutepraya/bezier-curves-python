@@ -224,7 +224,7 @@ Input: List of Bezier curves, Output filename
 
 Pada bagian ini, kami menyajikan hasil eksperimen menggunakan metode **Pure Interpolation** pada beberapa jenis gambar.
 
-## **I. Percobaan 1: Makara UI (Kompleks)**
+## I. Percobaan 1: Makara UI (Kompleks)
 
 Kami melakukan percobaan pada gambar logo Makara UI (`makara.png`) yang memiliki geometri kompleks.
 
@@ -244,7 +244,7 @@ Kami melakukan percobaan pada gambar logo Makara UI (`makara.png`) yang memiliki
 | :---: | :---: |
 | ![](./images/input/makara.png){width=6cm} | ![](./images/output/makara-output-pure%20PNG/page-1.png){width=6cm} |
 
-## **II. Percobaan 2: Logo Superbank (Sederhana)**
+## II. Percobaan 2: Logo Superbank (Sederhana)
 
 Kami juga menguji pada logo Superbank (`superbank.png`) yang memiliki bentuk geometris sederhana.
 
@@ -264,7 +264,7 @@ Kami juga menguji pada logo Superbank (`superbank.png`) yang memiliki bentuk geo
 | :---: | :---: |
 | ![](./images/input/superbank.png){width=6cm} | ![](./images/output/superbank-output-pure%20PNG/page-1.png){width=6cm} |
 
-## **III. Percobaan 3: Gradient (Failure Case)**
+## III. Percobaan 3: Gradient (Failure Case)
 
 Kami melakukan percobaan pada gambar `gradient.png` di mana warna objek memiliki gradien yang halus menyatu dengan latar belakang atau perubahan warna yang tidak tajam.
 
@@ -287,7 +287,7 @@ Kami melakukan percobaan pada gambar `gradient.png` di mana warna objek memiliki
 **Analisis Kegagalan:**
 Pada percobaan ini, output PDF yang dihasilkan **kosong (blank)**. Hal ini disebabkan oleh cara kerja algoritma *Canny Edge Detection* yang bergantung pada perubahan intensitas piksel yang tajam (gradien tinggi) untuk mendeteksi tepi. Pada gambar dengan gradien warna yang halus, tidak terdapat batas tegas yang dapat diidentifikasi sebagai "tepi" oleh algoritma, sehingga tidak ada titik kontur yang diekstraksi. Akibatnya, tidak ada kurva yang dapat dibentuk.
 
-## **IV. Analisis Umum Pure Interpolation**
+## IV. Analisis Umum Pure Interpolation
 
 1.  **Akurasi Sempurna:** Metode ini menjamin akurasi visual yang sangat tinggi karena setiap titik kontur direpresentasikan.
 2.  **Inefisiensi Ukuran:** Rasio kompresi konsisten pada angka 1:1. Jumlah kurva yang dihasilkan sangat masif (74 ribu untuk Makara), membuat ukuran file tidak efisien.
