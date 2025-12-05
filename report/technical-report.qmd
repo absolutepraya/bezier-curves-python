@@ -220,7 +220,26 @@ Input: List of Bezier curves, Output filename
 
 {{< pagebreak >}}
 
-# 4\. Hasil dan Analisis (Pure Interpolation)
+## 3.4 Arsitektur *Code* dan Alur Eksekusi
+
+Untuk meningkatkan modularitas dan pemeliharaan kode, implementasi logika fitting kurva dipisahkan ke dalam paket `src/fitting/`. Struktur ini memisahkan primitif matematika dari strategi fitting tingkat tinggi.
+
+**1. Struktur Modul (`src/fitting/`)**
+
+*   **`core.py` (Math Primitives)**: Berisi fungsi matematika murni seperti `fit_cubic_bezier` (Least Squares solver) dan `calculate_max_error`, tanpa logika strategi.
+*   **`pure.py` (Pure Interpolation Strategy)**: Implementasi strategi "Pure Interpolation" yang menghubungkan setiap titik.
+*   **`recursive.py` (Hybrid Strategy)**: Implementasi pendekatan *divide and conquer* rekursif.
+*   **`fixed.py` (Fixed Count Strategy)**: Optimisasi jumlah kurva menggunakan *Priority Queue* (Heap).
+
+**2. Alur Eksekusi**
+
+Berikut adalah visualisasi alur data dari input pengguna di `main.py` hingga pemilihan modul strategi yang sesuai:
+
+![Execution Flow](./images/mermaid.png)
+
+{{< pagebreak >}}
+
+# 4. Hasil dan Analisis (Pure Interpolation)
 
 Pada bagian ini, kami menyajikan hasil eksperimen menggunakan metode **Pure Interpolation** pada beberapa jenis gambar.
 
