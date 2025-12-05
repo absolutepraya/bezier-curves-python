@@ -241,8 +241,8 @@ Kami melakukan percobaan pada gambar logo Makara UI (`makara.png`) yang memiliki
 **Visualisasi Hasil:**
 
 | Input | Output (Pure Interpolation) |
-| --- | --- |
-| `../input/makara.png`{width=6cm} | [IMAGE: Hasil PDF Pure Interpolation Makara] |
+| :---: | :---: |
+| ![](./images/input/makara.png){width=6cm} | ![](./images/output/makara-output-pure%20PNG/page-1.png){width=6cm} |
 
 ## **II. Percobaan 2: Logo Superbank (Sederhana)**
 
@@ -261,8 +261,8 @@ Kami juga menguji pada logo Superbank (`superbank.png`) yang memiliki bentuk geo
 **Visualisasi Hasil:**
 
 | Input | Output (Pure Interpolation) |
-| --- | --- |
-| `../input/superbank.png`{width=6cm} | [IMAGE: Hasil PDF Pure Interpolation Superbank] |
+| :---: | :---: |
+| ![](./images/input/superbank.png){width=6cm} | ![](./images/output/superbank-output-pure%20PNG/page-1.png){width=6cm} |
 
 ## **III. Percobaan 3: Gradient (Failure Case)**
 
@@ -277,6 +277,12 @@ Kami melakukan percobaan pada gambar `gradient.png` di mana warna objek memiliki
 | Total Titik Asli | **0 titik** |
 | **Total Kurva Bézier** | **0 kurva** |
 | **Rasio Kompresi** | **N/A** |
+
+**Visualisasi Hasil:**
+
+| Input | Output (Pure Interpolation) |
+| :---: | :---: |
+| ![](./images/input/gradient.png){width=6cm} | ![](./images/output/gradient-output-pure%20PNG/page-1.png){width=6cm} |
 
 **Analisis Kegagalan:**
 Pada percobaan ini, output PDF yang dihasilkan **kosong (blank)**. Hal ini disebabkan oleh cara kerja algoritma *Canny Edge Detection* yang bergantung pada perubahan intensitas piksel yang tajam (gradien tinggi) untuk mendeteksi tepi. Pada gambar dengan gradien warna yang halus, tidak terdapat batas tegas yang dapat diidentifikasi sebagai "tepi" oleh algoritma, sehingga tidak ada titik kontur yang diekstraksi. Akibatnya, tidak ada kurva yang dapat dibentuk.
@@ -356,8 +362,8 @@ Kami menjalankan algoritma ini pada gambar Makara UI (`makara.png`) untuk memban
 ## 5.3 Perbandingan Visual dan Efisiensi
 
 | Output (Pure Interpolation) | Output (Least Squares / Hybrid) |
-| --- | --- |
-| [IMAGE: Hasil PDF Pure Interpolation] | [IMAGE: Hasil PDF Least Squares] |
+| :------: | :------: |
+| ![](./images/output/makara-output-pure%20PNG/page-1.png){width=6cm} | ![](./images/output/makara-output-hybrid%20PNG/page-1.png){width=6cm} |
 | **74,569 Kurva** | **797 Kurva** |
 
 *Gambar 5.1 Perbandingan Visual Pure Interpolation vs Least Squares*
