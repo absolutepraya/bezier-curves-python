@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
-import math
-from bezier_math import Point, cubic_bezier
+from bezier_math import Point
 from curve_fitter import fit_curve_recursive
 from pdf_generator import generate_pdf_from_curves
 
@@ -31,15 +30,6 @@ def pure_interpolation(points):
     but for comparison, "sampling" is a good proxy for "high density curves".
     """
     curves = []
-    # We need 4 points for a cubic bezier: P0, P1, P2, P3.
-    # If we have points A, B, C, D, E, F...
-    # Pure interpolation usually means we want a curve that passes through ALL of them.
-    # A simple way is to treat every segment between points as a line (degree 1 bezier)
-    # or to group them.
-    
-    # Let's simulate "Pure Interpolation" by just connecting every single point with a line
-    # (which is a degree 1 Bezier, or a degree 3 with P1=P0*2/3+P3*1/3).
-    # This represents the "maximum detail" approach.
     
     for i in range(len(points) - 1):
         p0 = points[i]
@@ -62,7 +52,7 @@ def main():
 
     height, width = dims
     
-    # 1. Hybrid (Least Squares)
+    # Hybrid (Least Squares)
     print("\n--- Method 1: Hybrid (Least Squares) ---")
     hybrid_curves = []
     for contour in contours:
@@ -72,7 +62,7 @@ def main():
     generate_pdf_from_curves([hybrid_curves], "output/comparison_hybrid.pdf", width, height)
     print("Saved to output/comparison_hybrid.pdf")
 
-    # 2. Pure Interpolation (Connect every point)
+    # Pure Interpolation (Connect every point)
     print("\n--- Method 2: Pure Interpolation (Connect Dots) ---")
     pure_curves = []
     for contour in contours:

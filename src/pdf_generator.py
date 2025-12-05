@@ -11,12 +11,7 @@ class PDFGenerator:
         self.objects.append(content)
         return obj_id
         
-    def add_curve(self, p0, p1, p2, p3):
-        # PDF coordinates usually start from bottom-left.
-        # If our image coordinates are top-left, we might need to flip Y.
-        # For now, we assume the points are already in the desired coordinate system
-        # or we flip them here. Let's flip them here assuming input is image coords (y down).
-        
+    def add_curve(self, p0, p1, p2, p3):        
         h = self.height
         
         # Move to P0
@@ -31,10 +26,10 @@ class PDFGenerator:
         self.content_stream.append("f")
 
     def generate(self):
-        # 1. Header
+        # Header
         pdf_content = "%PDF-1.4\n"
         
-        # 2. Objects
+        # Objects
         offsets = []
         
         # Object 1: Catalog
@@ -56,7 +51,7 @@ class PDFGenerator:
         offsets.append(len(pdf_content))
         pdf_content += f"4 0 obj\n<< /Length {stream_len} >>\nstream\n{stream_data}\nendstream\nendobj\n"
         
-        # 3. Xref
+        # Xref
         xref_start = len(pdf_content)
         pdf_content += "xref\n"
         pdf_content += f"0 {len(offsets) + 1}\n"
@@ -64,7 +59,7 @@ class PDFGenerator:
         for offset in offsets:
             pdf_content += f"{offset:010d} 00000 n \n"
             
-        # 4. Trailer
+        # Trailer
         pdf_content += "trailer\n"
         pdf_content += f"<< /Size {len(offsets) + 1} /Root 1 0 R >>\n"
         pdf_content += "startxref\n"
@@ -77,11 +72,6 @@ class PDFGenerator:
 def generate_pdf_from_curves(curves, output_filename, width, height):
     pdf = PDFGenerator(output_filename, width, height)
     
-    # We can group curves that are connected, but for simplicity
-    # we can just treat each curve as a sub-path.
-    # Ideally, we should detect closed loops for filling.
-    # The 'curves' input is a list of lists of curves (one list per contour).
-    
     for contour_curves in curves:
         if not contour_curves:
             continue
@@ -92,13 +82,10 @@ def generate_pdf_from_curves(curves, output_filename, width, height):
         pdf.content_stream.append(f"{p0.x:.2f} {h - p0.y:.2f} m")
         
         for curve in contour_curves:
-            # curve is [p0, p1, p2, p3]
-            # We assume p0 of this curve is p3 of previous, so we just issue 'c'
             p1, p2, p3 = curve[1], curve[2], curve[3]
             pdf.content_stream.append(f"{p1.x:.2f} {h - p1.y:.2f} {p2.x:.2f} {h - p2.y:.2f} {p3.x:.2f} {h - p3.y:.2f} c")
             
         # Close and stroke/fill
-        # For now, let's just stroke.
         pdf.add_stroke()
         
     pdf.generate()

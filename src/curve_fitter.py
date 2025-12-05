@@ -1,5 +1,4 @@
-import math
-from bezier_math import Point, cubic_bezier, bernstein_poly
+from bezier_math import Point, cubic_bezier
 
 def chord_length_parameterize(points):
     """
@@ -38,18 +37,6 @@ def fit_cubic_bezier(points):
 
     # Parameterize points
     u = chord_length_parameterize(points)
-
-    # We want to minimize sum || B(u_i) - P_i ||^2
-    # B(u) = (1-u)^3 P0 + 3(1-u)^2 u P1 + 3(1-u) u^2 P2 + u^3 P3
-    # Let A1(u) = 3(1-u)^2 u
-    # Let A2(u) = 3(1-u) u^2
-    # We want to find P1, P2 such that:
-    # A1(u_i) P1 + A2(u_i) P2  ~=  P_i - (1-u_i)^3 P0 - u_i^3 P3
-    # Let X = [P1, P2]^T (conceptually, solving for x and y separately)
-    
-    # System of equations:
-    # [ sum(A1^2)    sum(A1*A2) ] [ P1 ] = [ sum(A1 * RHS) ]
-    # [ sum(A1*A2)   sum(A2^2)  ] [ P2 ]   [ sum(A2 * RHS) ]
     
     c11 = 0.0
     c12 = 0.0
@@ -166,16 +153,9 @@ def fit_curves_to_fixed_count(contours, target_count):
     """
     import heapq
     
-    # 1. Initial fit: 1 curve per contour
     # Heap stores: (-error, contour_index, points_of_segment, fitted_curve)
     # We use negative error because heapq is a min-heap
     pq = []
-    
-    # Store the final curves for each contour. 
-    # Since we split segments, we need a way to reconstruct the order.
-    # A simple way is to keep the segments in a list for each contour, 
-    # and when we split, we replace one segment with two.
-    # But to use the heap, we need to know which segment to replace.
     
     # Let's define a Segment class or structure
     class Segment:
@@ -207,36 +187,6 @@ def fit_curves_to_fixed_count(contours, target_count):
         all_segments.append([seg])
         total_curves += 1
         
-        # Add to priority queue
-        # We store (error, contour_index, segment_index_in_list)
-        # Note: segment_index_in_list is tricky because list changes.
-        # Better: Store the Segment object itself in the heap, and modify the list structure.
-        # But we need to know where it came from to split it.
-        
-    # Let's use a flat list of all active segments that are candidates for splitting.
-    # And we need to map them back to contours at the end.
-    # Actually, we can just maintain the list of segments per contour.
-    # The heap will store (-error, contour_index, segment_index).
-    # Wait, if we insert into the middle of a list, indices shift.
-    # Linked list? Or just use a unique ID for each segment?
-    
-    # Alternative:
-    # 1. Start with [ (contour_points) ] for each contour.
-    # 2. Fit curve to each.
-    # 3. Put all valid segments into a heap: (-error, contour_idx, segment_obj)
-    # 4. While count < target:
-    #    Pop max error segment.
-    #    Split points.
-    #    Fit left, Fit right.
-    #    Replace parent segment with left and right in the contour's segment list.
-    #    Push left and right to heap.
-    
-    # To handle the "replace in list" efficiently without indices messing up:
-    # We can use a Node class for a doubly linked list, or just a list and rebuild it?
-    # Given N=21 or even 100, list operations are cheap.
-    
-    # Let's use a wrapper object that knows its position or is part of a linked structure.
-    
     class Node:
         def __init__(self, points):
             self.points = points
@@ -250,7 +200,7 @@ def fit_curves_to_fixed_count(contours, target_count):
             if self.curve:
                 self.error = calculate_max_error(self.points, self.curve)
             else:
-                self.error = 0.0 # Cannot split further
+                self.error = 0.0 
                 
     # Initialize linked lists for each contour
     contour_heads = []
@@ -323,26 +273,6 @@ def fit_curves_to_fixed_count(contours, target_count):
         
         if node.next:
             node.next.prev = right_node
-            
-        # If node was head, update head
-        # We need to find which contour this node belongs to.
-        # This is expensive to search. 
-        # Better: Node knows its contour index? Or just don't update heads yet.
-        # We can just traverse from head? No, head might change.
-        # Let's store 'is_head' or similar?
-        # Actually, we can just store the list of nodes for each contour and replace?
-        # Linked list is good for O(1) insertion/deletion.
-        # We need to update the head pointer if we replaced the head.
-        
-        # Let's add a 'contour_idx' to Node
-        # But wait, we don't strictly need to update contour_heads if we just collect results at the end.
-        # We can collect results by traversing the linked list.
-        # But we need to know where the list starts.
-        # If we replace the head, the old head object is gone from the list.
-        # So we DO need to update contour_heads[contour_idx].
-        
-        # Let's add contour_idx to Node
-        pass # Logic handled below
         
         # Update total curves: -1 (removed parent) + 2 (added children) = +1
         total_curves += 1
@@ -352,14 +282,6 @@ def fit_curves_to_fixed_count(contours, target_count):
             heapq.heappush(heap, (-left_node.error, next(counter), left_node))
         if right_node.curve and len(right_node.points) >= 4:
             heapq.heappush(heap, (-right_node.error, next(counter), right_node))
-            
-        # We need to handle the head update.
-        # Since we don't have back-pointers to the list container, 
-        # let's just use a wrapper or be careful.
-        # Hack: We can keep the original 'head' node as a dummy or sentinel?
-        # Or just update the list in `contour_heads`?
-        # We don't have contour_idx in the loop.
-        # Let's restart the structure with contour_idx.
         
     # Re-implementation with contour_idx tracking
     return _fit_curves_with_heap(contours, target_count)
@@ -404,9 +326,6 @@ def _fit_curves_with_heap(contours, target_count):
                 
     while total_curves < target_count and heap:
         neg_err, _, node = heapq.heappop(heap)
-        
-        # Check if this node is still valid (it might have been processed? No, we pop and split)
-        # But wait, if we have duplicate entries? No, we only push once.
         
         points = node.points
         curve = node.curve

@@ -11,7 +11,7 @@ def main():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         
-    # 1. List images in input directory
+    # List images in input directory
     if not os.path.exists(input_dir):
         print(f"Error: Directory '{input_dir}' not found.")
         return
@@ -26,7 +26,7 @@ def main():
     for i, f in enumerate(files):
         print(f"{i+1}. {f}")
         
-    # 2. User selection
+    # User selection
     while True:
         try:
             choice = input("\nSelect an image number to process: ")
@@ -41,10 +41,10 @@ def main():
             
     input_path = os.path.join(input_dir, filename)
     
-    # 3. Construct output filename
+    # Construct output filename
     name_without_ext = os.path.splitext(filename)[0]
     
-    # 4. Ask for Method
+    # Ask for Method
     method = 1 # Default Hybrid
     try:
         method_input = input(f"\nSelect Method:\n1. Hybrid (Least Squares) [Default]\n2. Pure Interpolation (Connect every point)\nChoice: ")
