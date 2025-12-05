@@ -1,7 +1,4 @@
 import os
-import argparse
-import cv2
-import csv
 from pdf_generator import generate_pdf_from_curves
 from bezier_math import Point
 from fitting import fit_curve_recursive, fit_curves_to_fixed_count, fit_curve_pure_interpolation

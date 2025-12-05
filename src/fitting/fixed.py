@@ -36,6 +36,7 @@ def _fit_curves_with_heap(contours, target_count):
     counter = itertools.count()
     total_curves = 0
     
+    # Initial fitting
     for i, contour in enumerate(contours):
         if len(contour) < 2:
             continue
@@ -48,12 +49,10 @@ def _fit_curves_with_heap(contours, target_count):
             total_curves += 1
             if len(node.points) >= 4:
                 heapq.heappush(heap, (-node.error, next(counter), node))
-                
+
+    # Iteratively split until we reach target_count
     while total_curves < target_count and heap:
         neg_err, _, node = heapq.heappop(heap)
-        
-        # Check if this node is still valid (it might have been processed? No, we pop and split)
-        # But wait, if we have duplicate entries? No, we only push once.
         
         points = node.points
         curve = node.curve
@@ -63,6 +62,7 @@ def _fit_curves_with_heap(contours, target_count):
         max_dist = 0.0
         split_idx = len(points) // 2
         
+        # Find the point with maximum error
         for i in range(len(points)):
             p_curve = cubic_bezier(u[i], curve[0], curve[1], curve[2], curve[3])
             dist = points[i].dist(p_curve)
@@ -70,6 +70,7 @@ def _fit_curves_with_heap(contours, target_count):
                 max_dist = dist
                 split_idx = i
         
+        # Ensure split_idx is valid
         if split_idx == 0: split_idx = 1
         if split_idx == len(points) - 1: split_idx = len(points) - 2
         
@@ -98,6 +99,7 @@ def _fit_curves_with_heap(contours, target_count):
             
         total_curves += 1
         
+        # Push new nodes to heap if they have enough points
         if left_node.curve and len(left_node.points) >= 4:
             heapq.heappush(heap, (-left_node.error, next(counter), left_node))
         if right_node.curve and len(right_node.points) >= 4:

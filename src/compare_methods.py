@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
 from bezier_math import Point
-from curve_fitter import fit_curve_recursive
+from fitting import fit_curve_recursive
 from pdf_generator import generate_pdf_from_curves
 
 def get_contours(image_path):
+    # Preprocess image and extract contours
     img = cv2.imread(image_path)
     if img is None:
         return None, None
@@ -12,6 +13,7 @@ def get_contours(image_path):
     edges = cv2.Canny(gray, 100, 200)
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     
+    # Convert contours to list of Point objects
     point_contours = []
     for cnt in contours:
         points = []

@@ -81,6 +81,7 @@ def generate_pdf_from_curves(curves, output_filename, width, height):
         h = height
         pdf.content_stream.append(f"{p0.x:.2f} {h - p0.y:.2f} m")
         
+        # Draw curves
         for curve in contour_curves:
             p1, p2, p3 = curve[1], curve[2], curve[3]
             pdf.content_stream.append(f"{p1.x:.2f} {h - p1.y:.2f} {p2.x:.2f} {h - p2.y:.2f} {p3.x:.2f} {h - p3.y:.2f} c")

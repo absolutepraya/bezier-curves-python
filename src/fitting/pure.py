@@ -13,9 +13,11 @@ def fit_curve_pure_interpolation(points):
     """
     curves = []
     
+    # If less than 2 points, cannot form any curve
     if len(points) < 2:
         return []
-        
+    
+    # Create straight line Bezier curves between every pair of points
     for i in range(len(points) - 1):
         p0 = points[i]
         p3 = points[i+1]

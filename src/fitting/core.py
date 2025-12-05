@@ -1,4 +1,3 @@
-import math
 import sys
 import os
 
@@ -53,6 +52,7 @@ def fit_cubic_bezier(points):
     y1 = 0.0
     y2 = 0.0
 
+    # Accumulate terms for the system of equations
     for i in range(n):
         t = u[i]
         a1 = 3 * (1-t)**2 * t

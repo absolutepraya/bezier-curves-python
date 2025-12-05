@@ -58,6 +58,8 @@ def evaluate_curve_length(p0, p1, p2, p3, steps=100):
     """
     length = 0.0
     prev_point = p0
+
+    # Sum the distances between consecutive points on the curve
     for i in range(1, steps + 1):
         t = i / steps
         curr_point = cubic_bezier(t, p0, p1, p2, p3)

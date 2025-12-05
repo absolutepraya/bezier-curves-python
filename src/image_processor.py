@@ -21,6 +21,7 @@ def get_contours(image_path, min_area=100):
     # Find contours
     contours, _ = cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
+    # Process contours into Point objects and filter by area
     processed_contours = []
     for cnt in contours:
         # Filter small noise
