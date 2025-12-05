@@ -136,14 +136,18 @@ Representasi ini menjamin bahwa kurva dimulai di $P_0$ (saat $t=0$) dan berakhir
 
 ## 2.2 Pure Interpolation
 
-Dalam metode *Pure Interpolation*, tujuan utamanya adalah membuat kurva yang melewati setiap titik data yang tersedia. Jika diberikan sekumpulan titik $D_0, D_1, \dots, D_k$, kita membuat segmen kurva Bézier antara setiap pasangan titik berurutan $D_i$ dan $D_{i+1}$.
+Dalam metode *Pure Interpolation*, tujuan utamanya adalah membuat kurva yang melewati setiap titik data yang tersedia secara eksak. Jika diberikan sekumpulan titik $D_0, D_1, \dots, D_k$, kita membuat segmen kurva Bézier antara setiap pasangan titik berurutan $D_i$ dan $D_{i+1}$.
 
-Untuk memastikan kontinuitas $C^1$ (kemulusan sambungan), titik kontrol $P_1$ dan $P_2$ harus dipilih sedemikian rupa sehingga garis singgung masuk dan keluar selaras. Namun, untuk implementasi dasar yang menghubungkan setiap titik (piecewise linear approximation using Bezier), kita dapat menempatkan titik kontrol pada garis lurus antara $D_i$ dan $D_{i+1}$:
+Secara matematis, untuk menjamin kontinuitas $C^0$ (kurva tersambung), titik akhir segmen ke-$i$ harus sama dengan titik awal segmen ke-$(i+1)$. Ini sudah terpenuhi dengan menetapkan $P_0 = D_i$ dan $P_3 = D_{i+1}$.
 
-$$P_1 = D_i + \frac{1}{3}(D_{i+1} - D_i)$$
-$$P_2 = D_i + \frac{2}{3}(D_{i+1} - D_i)$$
+Untuk menentukan titik kontrol internal $P_1$ dan $P_2$, kami menggunakan pendekatan interpolasi linear sederhana. Pendekatan ini menempatkan titik kontrol pada garis lurus yang menghubungkan $D_i$ dan $D_{i+1}$ dengan pembagian segmen yang merata (1/3 dan 2/3 jarak).
 
-Ini secara efektif membuat kurva Bézier berperilaku sebagai garis lurus yang menghubungkan $D_i$ dan $D_{i+1}$.
+Rumus yang digunakan adalah:
+
+$$P_1 = D_i + \frac{1}{3}(D_{i+1} - D_i) = \frac{2}{3}D_i + \frac{1}{3}D_{i+1}$$
+$$P_2 = D_i + \frac{2}{3}(D_{i+1} - D_i) = \frac{1}{3}D_i + \frac{2}{3}D_{i+1}$$
+
+Dengan konfigurasi ini, kurva Bézier kubik akan berimpit dengan garis lurus yang menghubungkan $D_i$ dan $D_{i+1}$. Meskipun secara teknis ini adalah kurva derajat 3, bentuk geometrisnya adalah segmen garis lurus. Hal ini dipilih karena titik-titik kontur yang dihasilkan dari ekstraksi citra (pixel-based) sudah sangat rapat, sehingga interpolasi linear antar piksel sudah memberikan representasi visual yang sangat akurat tanpa perlu menebak kelengkungan antar piksel.
 
 {{< pagebreak >}}
 
@@ -151,20 +155,43 @@ Ini secara efektif membuat kurva Bézier berperilaku sebagai garis lurus yang me
 
 ## 3.1 Pengolahan Citra (Image Processing)
 
-Kami menggunakan pustaka `cv2` (OpenCV) untuk tahap pra-pemrosesan. Kami menggunakan *Canny Edge Detection* untuk mendeteksi tepi berdasarkan gradien intensitas, sehingga mampu menangkap kontur logo dengan akurat. Hasil dari tahap ini adalah sekumpulan titik koordinat $(x, y)$ yang merepresentasikan garis tepi gambar.
+Kami menggunakan pustaka `cv2` (OpenCV) untuk tahap pra-pemrosesan. Kami menggunakan *Canny Edge Detection* untuk mendeteksi tepi berdasarkan gradien intensitas. Metode ini bekerja dengan mencari area di mana intensitas piksel berubah drastis (misalnya dari hitam ke putih). Hasil dari tahap ini adalah sekumpulan titik koordinat $(x, y)$ yang merepresentasikan garis tepi gambar.
 
 ## 3.2 Pure Interpolation Algorithm
 
-Algoritma utama kami untuk metode ini (`fit_curve_pure_interpolation`) sangat sederhana namun menjamin akurasi posisi absolut karena kurva melewati setiap titik yang terdeteksi.
+Algoritma utama kami untuk metode ini (`fit_curve_pure_interpolation`) mengiterasi setiap titik kontur dan membentuk kurva Bézier.
 
-**Langkah-langkah:**
-1.  Terima masukan berupa daftar titik kontur $D_0, D_1, \dots, D_k$.
-2.  Iterasi dari $i = 0$ sampai $k-1$.
-3.  Tentukan $P_0 = D_i$ dan $P_3 = D_{i+1}$.
-4.  Hitung titik kontrol internal $P_1$ dan $P_2$ menggunakan interpolasi linear (seperti dijelaskan di Dasar Teori).
-5.  Simpan segmen kurva $[P_0, P_1, P_2, P_3]$.
+**Pseudocode:**
 
-Metode ini menghasilkan jumlah kurva yang sama dengan jumlah segmen garis antar titik (jumlah titik - 1).
+```text
+Algorithm: Pure Interpolation Curve Fitting
+Input: List of contour points D = [D_0, D_1, ..., D_k]
+Output: List of Bezier curves
+
+1. Initialize empty list 'curves'
+2. If length(D) < 2:
+       Return empty list
+
+3. For i from 0 to k-1:
+       // Set endpoints
+       P0 = D[i]
+       P3 = D[i+1]
+       
+       // Calculate internal control points (Linear Interpolation)
+       // P1 is 1/3 of the way from P0 to P3
+       P1.x = (2/3) * P0.x + (1/3) * P3.x
+       P1.y = (2/3) * P0.y + (1/3) * P3.y
+       
+       // P2 is 2/3 of the way from P0 to P3
+       P2.x = (1/3) * P0.x + (2/3) * P3.x
+       P2.y = (1/3) * P0.y + (2/3) * P3.y
+       
+       // Create curve segment
+       curve = [P0, P1, P2, P3]
+       Append curve to 'curves'
+
+4. Return 'curves'
+```
 
 ## 3.3 Pembuatan PDF
 
@@ -195,11 +222,11 @@ Input: List of Bezier curves, Output filename
 
 # 4\. Hasil dan Analisis (Pure Interpolation)
 
-Pada bagian ini, kami menyajikan hasil eksperimen menggunakan metode **Pure Interpolation**.
+Pada bagian ini, kami menyajikan hasil eksperimen menggunakan metode **Pure Interpolation** pada beberapa jenis gambar.
 
-## **I. Data Eksperimen**
+## **I. Percobaan 1: Makara UI (Kompleks)**
 
-Kami melakukan percobaan pada gambar logo Makara UI (`makara.png`). Berikut adalah statistik hasil pemrosesan:
+Kami melakukan percobaan pada gambar logo Makara UI (`makara.png`) yang memiliki geometri kompleks.
 
 **Tabel 4.1 Statistik Pure Interpolation pada Makara UI**
 
@@ -211,19 +238,52 @@ Kami melakukan percobaan pada gambar logo Makara UI (`makara.png`). Berikut adal
 | **Total Kurva Bézier** | **74,569 kurva** |
 | **Rasio Kompresi** | **1 kurva per 1.00 titik** |
 
-## **II. Visualisasi Hasil**
+**Visualisasi Hasil:**
 
 | Input | Output (Pure Interpolation) |
 | --- | --- |
-| `../input/makara.png`{width=6cm} | [IMAGE: Hasil PDF Pure Interpolation] |
+| `../input/makara.png`{width=6cm} | [IMAGE: Hasil PDF Pure Interpolation Makara] |
 
-*Gambar 4.1 Perbandingan Masukan dan Keluaran Pure Interpolation*
+## **II. Percobaan 2: Logo Superbank (Sederhana)**
 
-## **III. Analisis**
+Kami juga menguji pada logo Superbank (`superbank.png`) yang memiliki bentuk geometris sederhana.
 
-1.  **Akurasi Sempurna:** Karena setiap titik kontur dihubungkan secara langsung, hasil visualisasi sangat akurat dan tidak ada detail yang hilang. Kurva mengikuti setiap piksel dari tepi yang terdeteksi oleh Canny Edge Detection.
-2.  **Inefisiensi Ukuran:** Kelemahan utama metode ini terlihat jelas pada jumlah kurva yang dihasilkan. Dengan 74,615 titik asli, dihasilkan 74,569 kurva Bézier. Ini berarti tidak ada kompresi data sama sekali (rasio 1:1).
-3.  **Ukuran File:** File PDF yang dihasilkan akan memiliki ukuran yang sangat besar karena harus menyimpan definisi untuk puluhan ribu kurva, yang sebenarnya bisa direpresentasikan dengan lebih sedikit kurva jika menggunakan aproksimasi.
+**Tabel 4.2 Statistik Pure Interpolation pada Logo Superbank**
+
+| Metrik | Nilai |
+| :--- | :--- |
+| Dimensi Gambar | $512 \times 512$ piksel |
+| Total Kontur | 3 |
+| Total Titik Asli | 2,546 titik |
+| **Total Kurva Bézier** | **2,543 kurva** |
+| **Rasio Kompresi** | **1 kurva per 1.00 titik** |
+
+**Visualisasi Hasil:**
+
+| Input | Output (Pure Interpolation) |
+| --- | --- |
+| `../input/superbank.png`{width=6cm} | [IMAGE: Hasil PDF Pure Interpolation Superbank] |
+
+## **III. Percobaan 3: Gradient (Failure Case)**
+
+Kami melakukan percobaan pada gambar `gradient.png` di mana warna objek memiliki gradien yang halus menyatu dengan latar belakang atau perubahan warna yang tidak tajam.
+
+**Tabel 4.3 Statistik Pure Interpolation pada Gradient**
+
+| Metrik | Nilai |
+| :--- | :--- |
+| Dimensi Gambar | $1000 \times 1000$ piksel |
+| Total Kontur | **0** |
+| Total Titik Asli | **0 titik** |
+| **Total Kurva Bézier** | **0 kurva** |
+
+**Analisis Kegagalan:**
+Pada percobaan ini, output PDF yang dihasilkan **kosong (blank)**. Hal ini disebabkan oleh cara kerja algoritma *Canny Edge Detection* yang bergantung pada perubahan intensitas piksel yang tajam (gradien tinggi) untuk mendeteksi tepi. Pada gambar dengan gradien warna yang halus, tidak terdapat batas tegas yang dapat diidentifikasi sebagai "tepi" oleh algoritma, sehingga tidak ada titik kontur yang diekstraksi. Akibatnya, tidak ada kurva yang dapat dibentuk.
+
+## **IV. Analisis Umum Pure Interpolation**
+
+1.  **Akurasi Sempurna:** Metode ini menjamin akurasi visual yang sangat tinggi karena setiap titik kontur direpresentasikan.
+2.  **Inefisiensi Ukuran:** Rasio kompresi konsisten pada angka 1:1. Jumlah kurva yang dihasilkan sangat masif (74 ribu untuk Makara), membuat ukuran file tidak efisien.
 
 {{< pagebreak >}}
 
@@ -240,7 +300,7 @@ Algoritma ini bekerja secara rekursif:
 
 ## 5.2 Hasil Eksperimen (Least Squares)
 
-Kami menjalankan algoritma ini pada gambar yang sama (`makara.png`) untuk membandingkan hasilnya.
+Kami menjalankan algoritma ini pada gambar Makara UI (`makara.png`) untuk membandingkan hasilnya.
 
 **Tabel 5.1 Statistik Least Squares pada Makara UI**
 
@@ -272,6 +332,7 @@ Proyek ini berhasil mendemonstrasikan dua pendekatan dalam vektorisasi citra men
 
 1.  **Pure Interpolation:** Menghubungkan setiap titik data secara langsung. Metode ini menjamin akurasi 100% terhadap data input tetapi sangat tidak efisien (rasio kompresi 1:1), menghasilkan puluhan ribu kurva untuk gambar kompleks.
 2.  **Least Squares Fitting (Optimisasi):** Menggunakan pendekatan statistik untuk mencocokkan kurva terbaik pada sekumpulan titik. Metode ini terbukti sangat efektif, mampu merepresentasikan gambar yang sama dengan jumlah kurva yang jauh lebih sedikit (rasio kompresi ~1:93) sambil mempertahankan kualitas visual yang tinggi.
+3.  **Keterbatasan Deteksi Tepi:** Kedua metode sangat bergantung pada kualitas deteksi tepi (*Canny*). Pada gambar dengan gradien halus, metode ini gagal mengekstraksi kontur, menyebabkan kegagalan vektorisasi.
 
 Untuk aplikasi praktis seperti desain grafis dan penyimpanan aset digital, metode optimisasi dengan *Least Squares* adalah pilihan yang jauh lebih baik dibandingkan interpolasi murni.
 
