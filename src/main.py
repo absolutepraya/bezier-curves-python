@@ -44,34 +44,60 @@ def main():
     # 3. Construct output filename
     name_without_ext = os.path.splitext(filename)[0]
     
-    # 4. Ask for number of curves
-    target_curves = 21 # Default
+    # 4. Ask for Method
+    method = 1 # Default Hybrid
     try:
-        user_input = input(f"\nHow many curves are we gonna use? (Press Enter for default {target_curves}, or 0 for auto-accuracy): ")
-        if user_input.strip():
-            target_curves = int(user_input)
+        method_input = input(f"\nSelect Method:\n1. Hybrid (Least Squares) [Default]\n2. Pure Interpolation (Connect every point)\nChoice: ")
+        if method_input.strip() == "2":
+            method = 2
     except ValueError:
-        print(f"Invalid input. Using default: {target_curves}")
+        pass
+
+    target_curves = 0 # Default for auto
     
-    if target_curves == 0:
-        print(f"\nProcessing {input_path} with automatic accuracy (threshold=2.0)...")
+    if method == 1:
+        # Hybrid Method: Ask for number of curves
+        default_curves = 21
+        try:
+            user_input = input(f"\nHow many curves are we gonna use? (Press Enter for default {default_curves}, or 0 for auto-accuracy): ")
+            if user_input.strip():
+                target_curves = int(user_input)
+            else:
+                target_curves = default_curves
+        except ValueError:
+            print(f"Invalid input. Using default: {default_curves}")
+            target_curves = default_curves
+            
+        if target_curves == 0:
+            print(f"\nProcessing {input_path} with Hybrid Method (Auto Accuracy, threshold=2.0)...")
+        else:
+            print(f"\nProcessing {input_path} with Hybrid Method (Target {target_curves} curves)...")
+            
     else:
-        print(f"\nProcessing {input_path} with target {target_curves} curves...")
-    
+        # Pure Interpolation
+        print(f"\nProcessing {input_path} with Pure Interpolation (Connect every point)...")
+        print("WARNING: This may generate a very large number of curves!")
+
     try:
         # Get contours
         contours, (height, width, _) = get_contours(input_path)
         
         all_curves = []
         
-        if target_curves == 0:
-            # Use recursive fitting with error threshold
+        if method == 2:
+            # Pure Interpolation
+            from curve_fitter import fit_curve_pure_interpolation
+            for contour in contours:
+                curves = fit_curve_pure_interpolation(contour)
+                all_curves.append(curves)
+        elif target_curves == 0:
+            # Hybrid Auto
             from curve_fitter import fit_curve_recursive
             for contour in contours:
                 curves = fit_curve_recursive(contour, error_threshold=2.0)
                 all_curves.append(curves)
         else:
-            # Fit curves using fixed count strategy
+            # Hybrid Fixed Count
             from curve_fitter import fit_curves_to_fixed_count
             all_curves = fit_curves_to_fixed_count(contours, target_curves)
         
